@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">GoRental</string>
+    <string name="car_image_desc">Rental car</string>
+    <string name="pick_up_text">Pick up</string>
+    <string name="drop_off_text">Drop off</string>
+    <string name="city_text">city</string>
+    <string name="enter_city_text">Enter the city</string>
+    <string name="state_country_text">state/country</string>
+    <string name="enter_state_country_text">Enter the state/ country</string>
+    <string name="error_message">Please provide valid information</string>
+    <string name="search_button_text">Search on Kayak</string>
+    <string name="date_icon_desc">Date</string>
+    <string name="ok_text">OK</string>
+    <string name="pick_up_loc">Pick up location</string>
+    <string name="drop_off_loc">Drop off location(optional)</string>
+</resources>
