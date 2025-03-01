@@ -57,7 +57,7 @@ fun DatePickerBox(modifier: Modifier, label:String, date:String, onclick : (data
     ) {
         Text(text =label , style = TextStyle(
             fontWeight = FontWeight.Bold
-        ) )
+        ),color = colorResource(id = R.color.black) )
         Button(onClick = { openDialog.value = true },
             colors = ButtonDefaults.buttonColors(colorResource(id = R.color.light_grey)),
             shape = RoundedCornerShape(10.dp),

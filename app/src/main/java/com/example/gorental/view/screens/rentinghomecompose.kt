@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -38,7 +40,10 @@ import com.example.gorental.viewmodel.MainViewModel
 
 
 @Composable
-fun HomeScreen(navController: NavController,viewModel: MainViewModel) {
+fun HomeScreen(navController: NavController, viewModel: MainViewModel) {
+
+    val scrollState = rememberScrollState()
+
     Scaffold { padding ->
         Box(
             modifier = Modifier
@@ -46,7 +51,7 @@ fun HomeScreen(navController: NavController,viewModel: MainViewModel) {
                 .padding(padding)
                 .background(color = colorResource(id = R.color.background_white))
         ) {
-            Column {
+            Column(modifier = Modifier.verticalScroll(scrollState)) {
                 Image(
                     painter = painterResource(id = R.drawable.rental_car),
                     contentDescription = stringResource(
@@ -68,15 +73,15 @@ fun HomeScreen(navController: NavController,viewModel: MainViewModel) {
 
 
 @Composable
-fun RentalEntryCard(viewModel: MainViewModel,webViewNav: (link:String)->Unit){
+fun RentalEntryCard(viewModel: MainViewModel, webViewNav: (link: String) -> Unit) {
 
-    val cityStateFrom =  viewModel.cityFromLiveData.observeAsState(EMPTY_STRING)
+    val cityStateFrom = viewModel.cityFromLiveData.observeAsState(EMPTY_STRING)
     val countryStateFrom = viewModel.countryFromLiveData.observeAsState(EMPTY_STRING)
-    val cityStateTo =  viewModel.cityToLiveData.observeAsState(EMPTY_STRING)
-    val countryStateTo =  viewModel.countryToLiveData.observeAsState(EMPTY_STRING)
-    val pickUpState =  viewModel.pickUpDateLiveData.observeAsState(EMPTY_STRING)
-    val dropOffState =  viewModel.dropOffDateLiveData.observeAsState(EMPTY_STRING)
-    val validInput =  viewModel.validInputFlag.observeAsState(true)
+    val cityStateTo = viewModel.cityToLiveData.observeAsState(EMPTY_STRING)
+    val countryStateTo = viewModel.countryToLiveData.observeAsState(EMPTY_STRING)
+    val pickUpState = viewModel.pickUpDateLiveData.observeAsState(EMPTY_STRING)
+    val dropOffState = viewModel.dropOffDateLiveData.observeAsState(EMPTY_STRING)
+    val validInput = viewModel.validInputFlag.observeAsState(true)
 
     Card(
         modifier = Modifier
@@ -92,36 +97,38 @@ fun RentalEntryCard(viewModel: MainViewModel,webViewNav: (link:String)->Unit){
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(10.dp)
-        ){
-          val (fromLocText,toLocText,fromCity,fromCountry,toCity,toCountry,pickUpDate,dropOffDate,searchButton,errorText) = createRefs()
+        ) {
+            val (fromLocText, toLocText, fromCity, fromCountry, toCity, toCountry, pickUpDate, dropOffDate, searchButton, errorText) = createRefs()
 
-            DatePickerBox(modifier = Modifier.constrainAs(pickUpDate){
-                top.linkTo(parent.top, margin = 10.dp)
-                start.linkTo(parent.start)
-                end.linkTo(dropOffDate.start)
-            }, label = stringResource(id = R.string.pick_up_text),
+            DatePickerBox(
+                modifier = Modifier.constrainAs(pickUpDate) {
+                    top.linkTo(parent.top, margin = 10.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(dropOffDate.start)
+                }, label = stringResource(id = R.string.pick_up_text),
                 date = pickUpState.value
             ) {
                 viewModel.updatePickup(it)
             }
-            DatePickerBox(modifier = Modifier.constrainAs(dropOffDate){
-                top.linkTo(parent.top, margin = 10.dp)
-                start.linkTo(pickUpDate.end)
-                end.linkTo(parent.end)
-            }, label =  stringResource(id = R.string.drop_off_text),
+            DatePickerBox(
+                modifier = Modifier.constrainAs(dropOffDate) {
+                    top.linkTo(parent.top, margin = 10.dp)
+                    start.linkTo(pickUpDate.end)
+                    end.linkTo(parent.end)
+                }, label = stringResource(id = R.string.drop_off_text),
                 date = dropOffState.value
             ) {
                 viewModel.updateDropOff(it)
             }
             Text(text = stringResource(id = R.string.pick_up_loc),
                 style = TextStyle(fontWeight = FontWeight.Bold),
-                modifier = Modifier.constrainAs(fromLocText){
-                top.linkTo(pickUpDate.bottom,margin = 15.dp)
-                start.linkTo(fromCity.start)
-            })
+                modifier = Modifier.constrainAs(fromLocText) {
+                    top.linkTo(pickUpDate.bottom, margin = 15.dp)
+                    start.linkTo(fromCity.start)
+                })
             OutlinedTextField(
-                modifier = Modifier.constrainAs(fromCity){
-                    top.linkTo(fromLocText.bottom,margin = 5.dp)
+                modifier = Modifier.constrainAs(fromCity) {
+                    top.linkTo(fromLocText.bottom, margin = 5.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 },
@@ -135,7 +142,7 @@ fun RentalEntryCard(viewModel: MainViewModel,webViewNav: (link:String)->Unit){
                 },
             )
             OutlinedTextField(
-                modifier = Modifier.constrainAs(fromCountry){
+                modifier = Modifier.constrainAs(fromCountry) {
                     top.linkTo(fromCity.bottom, margin = 10.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
@@ -144,21 +151,29 @@ fun RentalEntryCard(viewModel: MainViewModel,webViewNav: (link:String)->Unit){
                 onValueChange = {
                     viewModel.updateCountryFrom(it)
                 },
-                label = { Text(text = stringResource(id = R.string.state_country_text)) },
+                label = {
+                    Text(
+                        text = stringResource(id = R.string.state_country_text),
+                        color = colorResource(id = R.color.black)
+                    )
+                },
                 placeholder = {
-                    Text(text = stringResource(id = R.string.enter_state_country_text))
+                    Text(
+                        text = stringResource(id = R.string.enter_state_country_text),
+                        color = colorResource(id = R.color.black)
+                    )
                 },
             )
             Text(text = stringResource(id = R.string.drop_off_loc),
                 style = TextStyle(fontWeight = FontWeight.Bold),
-                modifier = Modifier.constrainAs(toLocText){
+                modifier = Modifier.constrainAs(toLocText) {
                     top.linkTo(fromCountry.bottom, margin = 10.dp)
                     start.linkTo(fromCountry.start)
                 }
             )
             OutlinedTextField(
-                modifier = Modifier.constrainAs(toCity){
-                    top.linkTo(toLocText.bottom,margin = 5.dp)
+                modifier = Modifier.constrainAs(toCity) {
+                    top.linkTo(toLocText.bottom, margin = 5.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 },
@@ -172,7 +187,7 @@ fun RentalEntryCard(viewModel: MainViewModel,webViewNav: (link:String)->Unit){
                 },
             )
             OutlinedTextField(
-                modifier = Modifier.constrainAs(toCountry){
+                modifier = Modifier.constrainAs(toCountry) {
                     top.linkTo(toCity.bottom, margin = 10.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
@@ -181,38 +196,60 @@ fun RentalEntryCard(viewModel: MainViewModel,webViewNav: (link:String)->Unit){
                 onValueChange = {
                     viewModel.updateCountryTo(it)
                 },
-                label = { Text(text = stringResource(id = R.string.state_country_text)) },
+                label = {
+                    Text(
+                        text = stringResource(id = R.string.state_country_text),
+                        color = colorResource(id = R.color.black)
+                    )
+                },
                 placeholder = {
-                    Text(text = stringResource(id = R.string.enter_state_country_text))
+                    Text(
+                        text = stringResource(id = R.string.enter_state_country_text),
+                        color = colorResource(id = R.color.black)
+                    )
                 },
             )
 
-            if(!validInput.value){
+            if (!validInput.value) {
                 Text(
-                    stringResource(id = R.string.error_message), modifier = Modifier.constrainAs(errorText){
-                    top.linkTo(searchButton.bottom, margin = 10.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                },
+                    stringResource(id = R.string.error_message),
+                    modifier = Modifier.constrainAs(errorText) {
+                        top.linkTo(searchButton.bottom, margin = 10.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
                     color = colorResource(id = R.color.red)
-                    )
+                )
             }
 
-            Button(onClick = {
-                viewModel.updateValidityFlag(viewModel.validateInput(cityStateFrom.value,countryStateFrom.value,pickUpState.value,dropOffState.value))
-                if(validInput.value){
-                    val link = viewModel.getKayakWebLink()
-                    webViewNav.invoke(Uri.encode(link))
-                }
-            },
-                modifier = Modifier.constrainAs(searchButton){
-                top.linkTo(toCountry.bottom, margin = 20.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            },colors = ButtonDefaults.buttonColors(colorResource(id = R.color.black)),
+            Button(
+                onClick = {
+                    viewModel.updateValidityFlag(
+                        viewModel.validateInput(
+                            cityStateFrom.value,
+                            countryStateFrom.value,
+                            pickUpState.value,
+                            dropOffState.value
+                        )
+                    )
+                    if (validInput.value) {
+                        val link = viewModel.getKayakWebLink()
+                        webViewNav.invoke(Uri.encode(link))
+                    }
+                },
+                modifier = Modifier.constrainAs(searchButton) {
+                    top.linkTo(toCountry.bottom, margin = 20.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }, colors = ButtonDefaults.buttonColors(colorResource(id = R.color.black)),
                 shape = RoundedCornerShape(10.dp)
             ) {
-                Text(text = stringResource(id = R.string.search_button_text), style = TextStyle(fontWeight = FontWeight.Bold), fontSize = 18.sp)
+                Text(
+                    text = stringResource(id = R.string.search_button_text),
+                    style = TextStyle(fontWeight = FontWeight.Bold),
+                    fontSize = 18.sp,
+                    color = colorResource(id = R.color.background_white)
+                )
             }
 
         }
